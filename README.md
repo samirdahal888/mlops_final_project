@@ -1,8 +1,8 @@
 # Setup Instructions
 
-## step 1:
+## step 1: Install uv
 ```bash
- Install uv
+curl -Ls https://astral.sh/uv/install.sh | sh
  ```
 
 ## Step 2: Clone the Repository
@@ -15,7 +15,15 @@ cd mlops_final_project
 ``` bash 
 uv venv
 source .venv/bin/activate
-uv pip install -e .
+uv sync
+```
+## Step 4: Start Qdrant container 
+```bash
+docker run -d \
+  -p 6333:6333 \
+  -v qdrant_data:/qdrant/storage \
+  --name qdrant \
+  qdrant/qdrant
 ```
 
 ## Step4: Start the Backend
