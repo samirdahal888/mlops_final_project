@@ -1,5 +1,6 @@
-from pydantic_settings import BaseSettings
 from pathlib import Path
+
+from pydantic_settings import BaseSettings
 
 
 class ModelConfig(BaseSettings):
@@ -20,6 +21,8 @@ class QdrantConfig(BaseSettings):
     vector_size: int = 384
     use_local: bool = False
     local_path: str = "qdrant_data"
+
+    model_config = {"env_prefix": "QDRANT_"}
 
 
 class AppConfig(BaseSettings):
