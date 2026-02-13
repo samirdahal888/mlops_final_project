@@ -1,5 +1,6 @@
-from pydantic_settings import BaseSettings
 from pathlib import Path
+
+from pydantic_settings import BaseSettings
 
 
 class ModelConfig(BaseSettings):
@@ -23,6 +24,8 @@ class QdrantConfig(BaseSettings):
     
     class Config:
         env_prefix = "QDRANT__"
+
+    model_config = {"env_prefix": "QDRANT_"}
 
 
 class AppConfig(BaseSettings):
