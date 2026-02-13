@@ -26,14 +26,33 @@ class VectorStoreService:
         self._client = None
 
     def connect(self) -> None:
-        if self._config.use_local:
-            self._client = QdrantClient(path=self._config.local_path)
-        else:
-            self._client = QdrantClient(
-                host=self._config.host,
-                port=self._config.port,
-            )
-        self._ensure_collection_exists()
+        import time
+        import logging
+        
+        logger = logging.getLogger(__name__)
+        max_retries = 30
+        retry_delay = 2
+        
+        for attempt in range(1, max_retries + 1):
+            try:
+                if self._config.use_local:
+                    self._client = QdrantClient(path=self._config.local_path)
+                else:
+                    logger.info(f"Attempt {attempt}/{max_retries}: Connecting to Qdrant at {self._config.host}:{self._config.port}")
+                    self._client = QdrantClient(
+                        host=self._config.host,
+                        port=self._config.port,
+                    )
+                self._ensure_collection_exists()
+                logger.info("Successfully connected to Qdrant")
+                return
+            except Exception as e:
+                if attempt < max_retries:
+                    logger.warning(f"Failed to connect to Qdrant (attempt {attempt}/{max_retries}): {e}. Retrying in {retry_delay}s...")
+                    time.sleep(retry_delay)
+                else:
+                    logger.error(f"Failed to connect to Qdrant after {max_retries} attempts")
+                    raise
 
     def store_embeddings(
         self,

@@ -20,6 +20,9 @@ class QdrantConfig(BaseSettings):
     vector_size: int = 384
     use_local: bool = False
     local_path: str = "qdrant_data"
+    
+    class Config:
+        env_prefix = "QDRANT__"
 
 
 class AppConfig(BaseSettings):
