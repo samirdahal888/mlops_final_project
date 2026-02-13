@@ -18,9 +18,9 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - QDRANT__HOST=qdrant
-      - QDRANT__PORT=6333
-      - QDRANT__USE_LOCAL=false
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=6333
+      - QDRANT_USE_LOCAL=false
     depends_on:
       - qdrant
     volumes:
