@@ -33,7 +33,7 @@ def index_document(uploaded_file) -> dict:
 def ask_question(question: str, top_k: int = 5) -> dict:
     """Send a question to the /chat endpoint."""
     payload = {"question": question, "top_k": top_k}
-    response = requests.post(f"{API_BASE_URL}/chat", json=payload, timeout=120)
+    response = requests.post(f"{API_BASE_URL}/chat", json=payload, timeout=300)
     response.raise_for_status()
     return response.json()
 

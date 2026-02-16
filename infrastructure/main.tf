@@ -26,6 +26,33 @@ resource "aws_vpc_security_group_ingress_rule" "ssh" {
   cidr_ipv4         = "0.0.0.0/0"
 }
 
+resource "aws_vpc_security_group_ingress_rule" "http" {
+  security_group_id = aws_security_group.ssh_access.id
+  description       = "HTTP from anywhere"
+  from_port         = 80
+  to_port           = 80
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "backend" {
+  security_group_id = aws_security_group.ssh_access.id
+  description       = "Backend from anywhere"
+  from_port         = 8000
+  to_port           = 8000
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "qdrant" {
+  security_group_id = aws_security_group.ssh_access.id
+  description       = "Backend from anywhere"
+  from_port         = 6333
+  to_port           = 6333
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "0.0.0.0/0"
+}
+
 resource "aws_vpc_security_group_egress_rule" "all_outbound" {
   security_group_id = aws_security_group.ssh_access.id
   description       = "Allow all outbound traffic"
