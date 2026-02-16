@@ -25,6 +25,14 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
+          
+          # Add SSH keep-alive settings
+          cat >> ~/.ssh/config << EOF
+          Host *
+            ServerAliveInterval 60
+            ServerAliveCountMax 10
+            TCPKeepAlive yes
+          EOF
 
       - name: Create .env file
         run: |
@@ -55,7 +63,7 @@ jobs:
           EC2_HOST: ${{ secrets.EC2_IP }}
           EC2_USER: ${{ secrets.EC2_USER }}
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o ServerAliveInterval=60 $EC2_USER@$EC2_HOST << 'EOF'
             cd ~/app
             
             # Stop existing containers
@@ -64,8 +72,11 @@ jobs:
             # Clean up old images
             docker image prune -f
             
-            # Build and start services
-            docker compose build --no-cache
+            # Build and start services (with output to prevent timeout)
+            echo "Building images... This may take several minutes..."
+            docker compose build --no-cache --progress=plain
+            
+            echo "Starting services..."
             docker compose up -d
             
             # Wait for services
