@@ -74,7 +74,7 @@ jobs:
             
             # Build and start services (with output to prevent timeout)
             echo "Building images... This may take several minutes..."
-            docker compose build --no-cache --progress=plain
+            docker compose build --progress=plain
             
             echo "Starting services..."
             docker compose up -d
