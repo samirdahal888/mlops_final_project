@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings
 
 class ModelConfig(BaseSettings):
     embedding_model_name: str = "BAAI/bge-small-en-v1.5"
-    llm_model_name: str = "Qwen/Qwen2-0.5B-Instruct"
+    llm_model_name: str = "Qwen/Qwen3-0.6B"
     max_new_token: int = 512
 
 
@@ -21,6 +21,7 @@ class QdrantConfig(BaseSettings):
     vector_size: int = 384
     use_local: bool = False
     local_path: str = "qdrant_data"
+ 
 
     model_config = {"env_prefix": "QDRANT_"}
 

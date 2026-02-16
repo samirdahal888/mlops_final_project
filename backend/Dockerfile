@@ -2,21 +2,26 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install uv
-RUN pip install --no-cache-dir uv
+# Install system dependencies
+RUN apt-get update \
+    && apt-get install -y curl build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy project files
-COPY pyproject.toml ./
-COPY backend ./backend
+# Copy backend files
+COPY . ./backend
 
 # Install dependencies
-RUN uv pip install --system --no-cache -r pyproject.toml
+RUN pip install --upgrade pip && \
+    pip install --default-timeout=1000 \
+    fastapi pydantic pydantic-settings pymupdf python-multipart \
+    qdrant-client uvicorn && \
+    pip install --default-timeout=1000 \
+    torch --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --default-timeout=1000 transformers
 
-# Create data directory
+# Create upload directory
 RUN mkdir -p data/uploads
 
-# Expose the port
 EXPOSE 8000
 
-# Run the application
 CMD ["uvicorn", "backend.app:app", "--host", "0.0.0.0", "--port", "8000"]

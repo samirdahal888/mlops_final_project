@@ -1,48 +1,51 @@
-version: '3.8'
-
 services:
   qdrant:
-    image: qdrant/qdrant
+    image: qdrant/qdrant:latest
     container_name: qdrant
     ports:
       - "6333:6333"
+      - "6334:6334"
     volumes:
       - qdrant_data:/qdrant/storage
     networks:
-      - app-network
+      - rag-network
 
   backend:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
-    container_name: backend
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rag-backend
     ports:
       - "8000:8000"
     environment:
       - QDRANT_HOST=qdrant
       - QDRANT_PORT=6333
+      - QDRANT_USE_LOCAL=false
     depends_on:
       - qdrant
+    volumes:
+      - ./data:/app/data
     networks:
-      - app-network
+      - rag-network
+    restart: on-failure
 
   frontend:
     build:
-      context: .
-      dockerfile: frontend/Dockerfile
-    container_name: frontend
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: rag-frontend
     ports:
       - "8501:8501"
     environment:
-      - API_BASE_URL=http://backend:8000
+      - API_BASE_URL=http://rag-backend:8000
     depends_on:
       - backend
     networks:
-      - app-network
+      - rag-network
 
 volumes:
   qdrant_data:
 
 networks:
-  app-network:
+  rag-network:
     driver: bridge
